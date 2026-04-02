@@ -3,12 +3,13 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BookController;
+use App\Http\Controllers\TransactionController;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+//Route::get('/', function () {
+// return view('welcome');
+//});
 
-Route::get('/login', [AuthController::class, 'showLogin']);
+Route::get('/', [AuthController::class, 'showLogin']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/register', [AuthController::class, 'showRegister']);
@@ -23,14 +24,7 @@ Route::middleware(['role:admin'])->group(function () {
     });
 });
 
-// SISWA
-Route::middleware(['role:siswa'])->group(function () {
-    Route::get('/user/dashboard', function () {
-        return "Dashboard User";
-    });
-});
-
-// CRUD
+// CRUD Buku
 Route::middleware(['role:admin'])->group(function () {
     Route::get('/admin/books', [BookController::class, 'index']);
     Route::get('/admin/books/create', [BookController::class, 'create']);
@@ -40,4 +34,18 @@ Route::middleware(['role:admin'])->group(function () {
     Route::delete('/admin/books/{id}', [BookController::class, 'destroy']);
 });
 
+// SISWA
+Route::middleware(['role:siswa'])->group(function () {
+    Route::get('/user/dashboard', function () {
+        return "Dashboard User";
+    });
+});
 
+// Transaksi Peminjaman dan Pengembalian
+    Route::middleware(['role:siswa'])->group(function () {
+    Route::get('/user/books', [TransactionController::class, 'index']);
+    Route::post('/user/pinjam/{id}', [TransactionController::class, 'pinjam']);
+    Route::post('/user/kembali/{id}', [TransactionController::class, 'kembali']);
+});
+
+Route::get('/user/transaksi', [TransactionController::class, 'riwayat']);

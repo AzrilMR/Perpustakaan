@@ -14,15 +14,13 @@ class Transaction extends Model
         'status'
     ];
 
-    // Relasi ke User
+    public function book()
+    {
+        return $this->belongsTo(Book::class);
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
-    }
-
-    // Relasi ke Book
-    public function books()
-    {
-        return $this->belongsTo(Book::class);
     }
 }
