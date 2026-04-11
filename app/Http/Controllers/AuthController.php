@@ -9,13 +9,11 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
-    // TAMPIL LOGIN
     public function showLogin()
     {
         return view('auth.login');
     }
 
-    // PROSES LOGIN
     public function login(Request $request)
     {
         $credentials = $request->validate([
@@ -38,13 +36,11 @@ class AuthController extends Controller
         ]);
     }
 
-    // TAMPIL REGISTER
     public function showRegister()
     {
         return view('auth.register');
     }
 
-    // PROSES REGISTER
     public function register(Request $request)
     {
         $request->validate([
@@ -63,7 +59,26 @@ class AuthController extends Controller
         return redirect('/login')->with('success', 'Register berhasil');
     }
 
-    // LOGOUT
+    public function users()
+    {
+        $users = User::where('role', 'siswa')->get();
+        return view('admin.users.index', compact('users'));
+    }
+
+    public function deleteUser($id)
+    {
+        $user = User::findOrFail($id);
+
+      
+        if ($user->id == Auth::id()) {
+            return back()->with('error', 'Tidak bisa menghapus akun sendiri');
+        }
+
+        $user->delete();
+
+        return back()->with('success', 'User berhasil dihapus');
+    }
+
     public function logout(Request $request)
     {
         Auth::logout();

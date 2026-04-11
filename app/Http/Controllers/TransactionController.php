@@ -10,10 +10,21 @@ use Illuminate\Support\Facades\Auth;
 class TransactionController extends Controller
 {
     // LIST BUKU
-    public function index()
+    public function index(Request $request)
     {
-        $books = Book::all();
-        return view('user.books', compact('books'));
+        $search = $request->search;
+
+        $books = Book::with('category')
+            ->when($search, function ($query) use ($search) {
+                $query->where('judul', 'like', "%$search%")
+                    ->orWhere('penulis', 'like', "%$search%")
+                    ->orWhereHas('category', function ($q) use ($search) {
+                        $q->where('nama_kategori', 'like', "%$search%");
+                    });
+            })
+            ->get();
+
+        return view('user.books', compact('books', 'search'));
     }
 
     // PINJAM BUKU
@@ -81,5 +92,24 @@ class TransactionController extends Controller
         }
 
         return back()->with('success', 'Buku berhasil dikembalikan');
+    }
+
+    public function adminIndex()
+    {
+        $transactions = Transaction::with('book', 'user')->get();
+        return view('admin.transaksi.index', compact('transactions'));
+    }
+
+    public function delete($id)
+    {
+        $transaction = Transaction::findOrFail($id);
+
+        if ($transaction->status == 'dipinjam') {
+            return back()->with('error', 'Tidak bisa hapus, buku masih dipinjam');
+        }
+
+        $transaction->delete();
+
+        return back()->with('success', 'Transaksi dihapus');
     }
 }
