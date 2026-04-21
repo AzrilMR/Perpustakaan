@@ -11,9 +11,11 @@ class Transaction extends Model
         'book_id',
         'tanggal_pinjam',
         'tanggal_kembali',
-        'status'
+        'tanggal_jatuh_tempo',
+        'status',
+        'denda',
+        'perpanjangan'
     ];
-
     public function book()
     {
         return $this->belongsTo(Book::class);

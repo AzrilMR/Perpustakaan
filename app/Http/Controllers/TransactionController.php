@@ -6,62 +6,51 @@ use Illuminate\Http\Request;
 use App\Models\Book;
 use App\Models\Transaction;
 use Illuminate\Support\Facades\Auth;
+use Carbon\Carbon;
 
 class TransactionController extends Controller
 {
-    // LIST BUKU
+    // LIST + SEARCH
     public function index(Request $request)
     {
         $search = $request->search;
 
-        $books = Book::with('category')
-            ->when($search, function ($query) use ($search) {
-                $query->where('judul', 'like', "%$search%")
-                    ->orWhere('penulis', 'like', "%$search%")
-                    ->orWhereHas('category', function ($q) use ($search) {
-                        $q->where('nama_kategori', 'like', "%$search%");
-                    });
-            })
-            ->get();
+        $books = Book::when($search, function ($query) use ($search) {
+            $query->where('judul', 'like', "%$search%")
+                  ->orWhere('penulis', 'like', "%$search%");
+        })->get();
 
         return view('user.books', compact('books', 'search'));
     }
 
-    // PINJAM BUKU
+    // PINJAM
     public function pinjam($id)
     {
         $book = Book::findOrFail($id);
 
-        // CEK SUDAH DIPINJAM
         $cek = Transaction::where('user_id', Auth::id())
             ->where('book_id', $id)
             ->where('status', 'dipinjam')
             ->first();
 
-        if ($cek) {
-            return back()->with('error', 'Kamu sudah meminjam buku ini');
-        }
+        if ($cek) return back()->with('error', 'Sudah meminjam');
 
-        // CEK STOK
-        if ($book->stok <= 0) {
-            return back()->with('error', 'Stok habis');
-        }
+        if ($book->stok <= 0) return back()->with('error', 'Stok habis');
 
-        // SIMPAN
         Transaction::create([
             'user_id' => Auth::id(),
             'book_id' => $book->id,
             'tanggal_pinjam' => now(),
+            'tanggal_jatuh_tempo' => now()->addDays(7),
             'status' => 'dipinjam'
         ]);
 
-        // KURANGI STOK
         $book->decrement('stok');
 
-        return back()->with('success', 'Buku berhasil dipinjam');
+        return back()->with('success', 'Berhasil pinjam');
     }
 
-    // RIWAYAT
+    // RIWAYAT USER
     public function riwayat()
     {
         $transactions = Transaction::with('book')
@@ -71,41 +60,73 @@ class TransactionController extends Controller
         return view('user.transaksi', compact('transactions'));
     }
 
-    // KEMBALI
-    public function kembali($id)
+    // PERPANJANG USER
+    public function perpanjang($id)
     {
-        $transaction = Transaction::findOrFail($id);
+        $t = Transaction::findOrFail($id);
 
-        if ($transaction->status == 'kembali') {
-            return back()->with('error', 'Buku sudah dikembalikan');
-        }
+        if ($t->status != 'dipinjam')
+            return back()->with('error', 'Tidak bisa diperpanjang');
 
-        // UPDATE
-        $transaction->update([
-            'status' => 'kembali',
-            'tanggal_kembali' => now()
+        if ($t->perpanjangan >= 1)
+            return back()->with('error', 'Sudah maksimal');
+
+        if (now()->gt($t->tanggal_jatuh_tempo))
+            return back()->with('error', 'Sudah lewat jatuh tempo');
+
+        $t->update([
+            'tanggal_jatuh_tempo' => Carbon::parse($t->tanggal_jatuh_tempo)->addDays(7),
+            'perpanjangan' => $t->perpanjangan + 1
         ]);
 
-        // TAMBAH STOK
-        if ($transaction->book) {
-            $transaction->book->increment('stok');
-        }
-
-        return back()->with('success', 'Buku berhasil dikembalikan');
+        return back()->with('success', 'Perpanjang berhasil');
     }
 
+    // ADMIN LIST
     public function adminIndex()
     {
-        $transactions = Transaction::with('book', 'user')->get();
+        $transactions = Transaction::with('book','user')->get();
         return view('admin.transaksi.index', compact('transactions'));
     }
 
+    // ADMIN KEMBALIKAN
+    public function kembaliAdmin($id)
+    {
+        $t = Transaction::findOrFail($id);
+
+        if ($t->status == 'kembali')
+            return back()->with('error', 'Sudah dikembalikan');
+
+        $today = Carbon::now();
+        $jatuhTempo = Carbon::parse($t->tanggal_jatuh_tempo);
+
+        $denda = 0;
+
+        if ($today->gt($jatuhTempo)) {
+            $hari = $today->diffInDays($jatuhTempo);
+            $denda = $hari * 1000;
+        }
+
+        $t->update([
+            'status' => 'kembali',
+            'tanggal_kembali' => $today,
+            'denda' => $denda
+        ]);
+
+        if ($t->book) {
+            $t->book->increment('stok');
+        }
+
+        return back()->with('success', 'Dikembalikan. Denda: Rp '.$denda);
+    }
+
+    // ADMIN HAPUS
     public function delete($id)
     {
         $transaction = Transaction::findOrFail($id);
 
         if ($transaction->status == 'dipinjam') {
-            return back()->with('error', 'Tidak bisa hapus, buku masih dipinjam');
+            return back()->with('error', 'Tidak bisa hapus, masih dipinjam');
         }
 
         $transaction->delete();

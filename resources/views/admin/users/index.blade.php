@@ -2,85 +2,103 @@
 
 @section('content')
 <style>
-    /* Header Style */
-    .header-section {
-        margin-bottom: 30px;
+    :root {
+        --primary: #1E293B;
+        --background: #F1F5F9;
+        --card: #FFFFFF;
+        --text: #0F172A;
+        --text-muted: #64748B;
+        --border: #E2E8F0;
+        --danger: #DC2626;
     }
 
-    h2 {
-        color: #2D4263;
-        font-size: 1.8rem;
+    /* Header */
+    .header-section {
+        margin-bottom: 25px;
+    }
+
+    h1 {
+        color: var(--text);
+        font-size: 1.5rem;
         margin: 0;
     }
 
-    /* Table Style - Cozy Theme */
+    /* Table Container */
     .table-container {
-        background: #ECDBBA; /* Beige */
+        background: var(--card);
         border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        color: #2D4263;
+        color: var(--text);
     }
 
     th {
-        background-color: #2D4263; /* Forest Green */
-        color: #FEFBF3;
+        background: #F8FAFC;
+        color: var(--text-muted);
         text-align: left;
-        padding: 15px;
-        font-size: 0.9rem;
+        padding: 14px;
+        font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
 
     td {
-        padding: 15px;
-        border-bottom: 1px solid rgba(45, 66, 99, 0.1);
-        background-color: rgba(236, 219, 186, 0.5);
-    }
-
-    tr:last-child td {
-        border-bottom: none;
+        padding: 14px;
+        border-top: 1px solid var(--border);
+        font-size: 0.9rem;
+        background: transparent;
     }
 
     tr:hover td {
-        background-color: rgba(254, 251, 243, 0.4); /* Highlight Cream saat hover */
+        background-color: #F9FAFB;
     }
 
-    /* Button Style */
+    /* Button */
     .btn-delete {
-        background-color: transparent;
-        color: #C84B31; /* Terracotta */
-        border: 1px solid #C84B31;
-        padding: 6px 15px;
+        background: transparent;
+        color: var(--danger);
+        border: 1px solid var(--danger);
+        padding: 6px 12px;
         border-radius: 6px;
-        font-weight: bold;
+        font-size: 0.8rem;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: 0.2s;
     }
 
     .btn-delete:hover {
-        background-color: #C84B31;
-        color: #FEFBF3;
+        background: var(--danger);
+        color: white;
     }
 
-    /* Alert Style */
+    /* Alert */
     .alert {
-        padding: 12px 20px;
+        padding: 12px;
         border-radius: 8px;
         margin-top: 20px;
-        font-weight: 500;
+        font-size: 0.9rem;
+        border: 1px solid;
     }
-    .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+    .alert-success {
+        background: #ECFDF5;
+        color: #065F46;
+        border-color: #A7F3D0;
+    }
+
+    .alert-error {
+        background: #FEF2F2;
+        color: #991B1B;
+        border-color: #FCA5A5;
+    }
 </style>
 
 <div class="header-section">
-    <h2>Data Anggota Perpustakaan</h2>
+    <h1>Data Anggota Perpustakaan</h1>
 </div>
 
 <div class="table-container">
@@ -113,11 +131,11 @@
 </div>
 
 @if(session('success'))
-    <div class="alert alert-success">✨ {{ session('success') }}</div>
+    <div class="alert alert-success"> {{ session('success') }}</div>
 @endif
 
 @if(session('error'))
-    <div class="alert alert-error">⚠️ {{ session('error') }}</div>
+    <div class="alert alert-error"> {{ session('error') }}</div>
 @endif
 
 @endsection

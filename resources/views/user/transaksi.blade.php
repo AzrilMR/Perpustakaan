@@ -2,119 +2,197 @@
 
 @section('content')
 <style>
-    /* Header Style */
-    .header-section {
-        margin-bottom: 30px;
-    }
+:root {
+    --primary: #1E293B;
+    --background: #F1F5F9;
+    --card: #FFFFFF;
+    --text: #0F172A;
+    --text-muted: #64748B;
+    --border: #E2E8F0;
+    --danger: #DC2626;
+    --success: #16A34A;
+    --warning: #F59E0B;
+}
 
-    h2 {
-        color: #2D4263;
-        font-size: 1.8rem;
-        margin: 0;
-    }
+/* HEADER */
+.header-section {
+    margin-bottom: 20px;
+}
 
-    /* Card Style - Cozy Theme */
-    .transaction-card {
-        background: #ECDBBA; /* Beige */
-        border-radius: 12px;
-        padding: 20px;
-        margin-bottom: 15px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        border-left: 5px solid #2D4263; /* Accent line */
-    }
+.header-section h2 {
+    font-size: 1.5rem;
+    color: var(--text);
+}
 
-    .book-info h3 {
-        margin: 0 0 10px 0;
-        color: #2D4263;
-        font-size: 1.2rem;
-    }
+/* ALERT */
+.alert {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+}
 
-    .book-info p {
-        margin: 5px 0;
-        font-size: 0.9rem;
-        color: #555;
-    }
+.alert-success {
+    background: #ECFDF5;
+    color: #065F46;
+}
 
-    /* Badge Status */
-    .badge {
-        padding: 4px 12px;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: bold;
-        text-transform: uppercase;
-    }
-    .status-dipinjam { background: #fdf6e3; color: #b58900; border: 1px solid #b58900; }
-    .status-kembali { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.alert-error {
+    background: #FEF2F2;
+    color: #991B1B;
+}
 
-    /* Button Style */
-    .btn-return {
-        background-color: #C84B31; /* Terracotta */
-        color: #FEFBF3;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 8px;
-        font-weight: bold;
-        cursor: pointer;
-        transition: all 0.3s ease;
-    }
+/* GRID */
+.transaction-grid {
+    display: grid;
+    gap: 15px;
+}
 
-    .btn-return:hover {
-        background-color: #A93E28;
-        transform: translateY(-2px);
-    }
+/* CARD */
+.transaction-card {
+    background: var(--card);
+    border-radius: 12px;
+    padding: 18px;
+    border: 1px solid var(--border);
+    transition: 0.25s;
+}
 
-    /* Alert Style */
-    .alert {
-        padding: 12px 20px;
-        border-radius: 8px;
-        margin-bottom: 20px;
-        font-weight: 500;
-    }
-    .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+.transaction-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+/* TITLE */
+.book-info h3 {
+    margin: 0 0 10px;
+    font-size: 1.1rem;
+}
+
+/* INFO */
+.book-info p {
+    margin: 4px 0;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* STATUS BADGE */
+.badge {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    margin-top: 8px;
+}
+
+.status-dipinjam {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.status-kembali {
+    background: #DCFCE7;
+    color: #166534;
+}
+
+.status-terlambat {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* BUTTON */
+.btn-perpanjang {
+    margin-top: 10px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-perpanjang:hover {
+    background: #0F172A;
+}
+
+/* EMPTY */
+.empty-state {
+    text-align: center;
+    padding: 50px;
+    color: var(--text-muted);
+}
 </style>
 
 <div class="header-section">
-    <h2>Riwayat Peminjaman Anda</h2>
+    <h2>Riwayat Peminjaman</h2>
 </div>
 
 @if(session('success'))
-    <div class="alert alert-success">✨ {{ session('success') }}</div>
+    <div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
 @if(session('error'))
-    <div class="alert alert-error">⚠️ {{ session('error') }}</div>
+    <div class="alert alert-error">{{ session('error') }}</div>
 @endif
 
+<div class="transaction-grid">
 @forelse($transactions as $t)
+
+@php
+    $isLate = $t->status == 'dipinjam' && $t->tanggal_jatuh_tempo && now()->gt($t->tanggal_jatuh_tempo);
+@endphp
+
 <div class="transaction-card">
     <div class="book-info">
-        <h3>{{ $t->book->judul ?? 'Buku tidak ditemukan' }}</h3>
-        <p>📅 <b>Pinjam:</b> {{ $t->tanggal_pinjam }}</p>
-        <p>⌛ <b>Kembali:</b> {{ $t->tanggal_kembali ?? 'Belum dikembalikan' }}</p>
-        <span class="badge {{ $t->status == 'dipinjam' ? 'status-dipinjam' : 'status-kembali' }}">
-            {{ $t->status }}
-        </span>
-    </div>
 
-    @if($t->status == 'dipinjam')
-    <div class="action-area">
-        <form method="POST" action="/user/kembali/{{ $t->id }}">
-            @csrf
-            <button type="submit" class="btn-return" onclick="return confirm('Sudah yakin ingin mengembalikan buku ini?')">
-                Kembalikan Buku
-            </button>
-        </form>
+        <h3>{{ $t->book->judul ?? 'Buku tidak ditemukan' }}</h3>
+
+        <p>Pinjam: {{ \Carbon\Carbon::parse($t->tanggal_pinjam)->format('d M Y') }}</p>
+
+        <p>Jatuh tempo: 
+            {{ $t->tanggal_jatuh_tempo 
+                ? \Carbon\Carbon::parse($t->tanggal_jatuh_tempo)->format('d M Y') 
+                : '-' }}
+        </p>
+
+        <p>Kembali: 
+            {{ $t->tanggal_kembali 
+                ? \Carbon\Carbon::parse($t->tanggal_kembali)->format('d M Y') 
+                : 'Belum dikembalikan' }}
+        </p>
+
+        <p>Denda: Rp {{ number_format($t->denda, 0, ',', '.') }}</p>
+
+        <p>Perpanjangan: {{ $t->perpanjangan }}x</p>
+
+        {{-- STATUS --}}
+        @if($isLate)
+            <span class="badge status-terlambat">Terlambat</span>
+        @elseif($t->status == 'dipinjam')
+            <span class="badge status-dipinjam">Dipinjam</span>
+        @else
+            <span class="badge status-kembali">Selesai</span>
+        @endif
+
+        {{-- BUTTON --}}
+        @if($t->status == 'dipinjam' && $t->perpanjangan < 1)
+            <form method="POST" action="/user/perpanjang/{{ $t->id }}">
+                @csrf
+                <button class="btn-perpanjang">
+                    Perpanjang 7 Hari
+                </button>
+            </form>
+        @endif
+
     </div>
-    @endif
 </div>
+
 @empty
-<div style="text-align: center; padding: 50px; color: #666;">
-    <p>Anda belum memiliki riwayat peminjaman buku.</p>
+<div class="empty-state">
+    <p>Belum ada riwayat peminjaman</p>
 </div>
 @endforelse
+</div>
 
 @endsection

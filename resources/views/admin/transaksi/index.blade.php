@@ -2,103 +2,147 @@
 
 @section('content')
 <style>
-    /* Header Style */
-    .header-section {
-        margin-bottom: 30px;
+    :root {
+        --primary: #1E293B;
+        --background: #F1F5F9;
+        --card: #FFFFFF;
+        --text: #0F172A;
+        --text-muted: #64748B;
+        --border: #E2E8F0;
+        --danger: #DC2626;
+        --success: #16A34A;
+        --warning: #F59E0B;
     }
 
-    h2 {
-        color: #2D4263;
-        font-size: 1.8rem;
+    /* Header */
+    .header-section {
+        margin-bottom: 25px;
+    }
+
+    h1 {
+        color: var(--text);
+        font-size: 1.5rem;
         margin: 0;
     }
 
-    /* Table Style - Cozy Theme */
+    /* Table */
     .table-container {
-        background: #ECDBBA; /* Beige */
+        background: var(--card);
         border-radius: 12px;
         overflow: hidden;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        border: 1px solid var(--border);
     }
 
     table {
         width: 100%;
         border-collapse: collapse;
-        color: #2D4263;
+        color: var(--text);
     }
 
     th {
-        background-color: #2D4263; /* Forest Green */
-        color: #FEFBF3;
+        background: #F8FAFC;
+        color: var(--text-muted);
         text-align: left;
-        padding: 15px;
-        font-size: 0.9rem;
+        padding: 14px;
+        font-size: 0.75rem;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
 
     td {
-        padding: 15px;
-        border-bottom: 1px solid rgba(45, 66, 99, 0.1);
-    }
-
-    tr:last-child td {
-        border-bottom: none;
+        padding: 14px;
+        border-top: 1px solid var(--border);
+        font-size: 0.9rem;
     }
 
     tr:hover td {
-        background-color: rgba(254, 251, 243, 0.4); /* Highlight Cream */
+        background: #F9FAFB;
     }
 
-    /* Badge Status */
+    /* Badge */
     .badge {
         padding: 4px 10px;
-        border-radius: 6px;
-        font-size: 0.8rem;
-        font-weight: bold;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        font-weight: 600;
         text-transform: capitalize;
     }
-    .status-pinjam { background: #fdf6e3; color: #b58900; border: 1px solid #b58900; }
-    .status-kembali { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
 
-    /* Button Style */
+    .status-pinjam {
+        background: #FEF3C7;
+        color: #92400E;
+    }
+
+    .status-kembali {
+        background: #DCFCE7;
+        color: #166534;
+    }
+
+    /* Buttons */
     .btn-delete {
-        background-color: transparent;
-        color: #C84B31; /* Terracotta */
-        border: 1px solid #C84B31;
-        padding: 6px 15px;
+        background: transparent;
+        color: var(--danger);
+        border: 1px solid var(--danger);
+        padding: 6px 10px;
         border-radius: 6px;
-        font-weight: bold;
+        font-size: 0.8rem;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: 0.2s;
     }
 
     .btn-delete:hover {
-        background-color: #C84B31;
-        color: #FEFBF3;
+        background: var(--danger);
+        color: white;
     }
 
-    /* Alert Style */
+    .btn-kembali {
+        background: transparent;
+        color: var(--primary);
+        border: 1px solid var(--primary);
+        padding: 6px 10px;
+        border-radius: 6px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: 0.2s;
+    }
+
+    .btn-kembali:hover {
+        background: var(--primary);
+        color: white;
+    }
+
+    /* Alert */
     .alert {
-        padding: 12px 20px;
+        padding: 12px;
         border-radius: 8px;
         margin-top: 20px;
-        font-weight: 500;
+        font-size: 0.9rem;
+        border: 1px solid;
     }
-    .alert-success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    .alert-error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+    .alert-success {
+        background: #ECFDF5;
+        color: #065F46;
+        border-color: #A7F3D0;
+    }
+
+    .alert-error {
+        background: #FEF2F2;
+        color: #991B1B;
+        border-color: #FCA5A5;
+    }
 </style>
 
 <div class="header-section">
-    <h2>Data Transaksi Perpustakaan</h2>
+    <h1>Data Transaksi Perpustakaan</h1>
 </div>
 
 @if(session('success'))
-    <div class="alert alert-success">✨ {{ session('success') }}</div>
+    <div class="alert alert-success"> {{ session('success') }}</div>
 @endif
 
 @if(session('error'))
-    <div class="alert alert-error">⚠️ {{ session('error') }}</div>
+    <div class="alert alert-error"> {{ session('error') }}</div>
 @endif
 
 <div class="table-container" style="margin-top: 20px;">
@@ -109,43 +153,66 @@
                 <th>Judul Buku</th>
                 <th>Status</th>
                 <th>Tanggal Pinjam</th>
+                <th>Jatuh Tempo</th>
                 <th>Tanggal Kembali</th>
-                <th style="text-align: center;">Aksi</th>
+                <th>Denda</th>
+                <th style="text-align:center;">Aksi</th>
             </tr>
         </thead>
         <tbody>
             @foreach($transactions as $t)
-        <tr>
-            <td style="font-weight: 600;">{{ $t->user->name }}</td>
-            <td>{{ $t->book->judul ?? 'Buku dihapus' }}</td>
+            <tr>
+                <td style="font-weight:600;">{{ $t->user->name }}</td>
+                <td>{{ $t->book->judul ?? 'Buku dihapus' }}</td>
 
-            <td>
-                <span class="badge {{ $t->status == 'dipinjam' ? 'status-pinjam' : 'status-kembali' }}">
-                    {{ $t->status }}
-                </span>
-            </td>
+                <td>
+                    <span class="badge {{ $t->status == 'dipinjam' ? 'status-pinjam' : 'status-kembali' }}">
+                        {{ $t->status }}
+                    </span>
+                </td>
 
-            <td>
-                {{ \Carbon\Carbon::parse($t->tanggal_pinjam)->format('d M Y') }}
-            </td>
+                <td>
+                    {{ \Carbon\Carbon::parse($t->tanggal_pinjam)->format('d M Y') }}
+                </td>
 
-            <td>
-                {{ $t->tanggal_kembali 
-                    ? \Carbon\Carbon::parse($t->tanggal_kembali)->format('d M Y') 
-                    : '-' }}
-            </td>
+                <td>
+                    {{ $t->tanggal_jatuh_tempo 
+                        ? \Carbon\Carbon::parse($t->tanggal_jatuh_tempo)->format('d M Y') 
+                        : '-' }}
+                </td>
 
-            <td style="text-align: center;">
-                <form method="POST" action="/admin/transaksi/{{ $t->id }}">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="btn-delete"
-                        onclick="return confirm('Yakin ingin menghapus riwayat transaksi ini?')">
-                        Hapus
-                    </button>
-                </form>
-            </td>
-        </tr>
+                <td>
+                    {{ $t->tanggal_kembali 
+                        ? \Carbon\Carbon::parse($t->tanggal_kembali)->format('d M Y') 
+                        : '-' }}
+                </td>
+
+                <td style="font-weight:bold;">
+                    Rp {{ number_format($t->denda, 0, ',', '.') }}
+                </td>
+
+                <td style="text-align:center; display:flex; gap:5px; justify-content:center;">
+                    
+                    @if($t->status == 'dipinjam')
+                    <form method="POST" action="/admin/transaksi/kembali/{{ $t->id }}">
+                        @csrf
+                        <button type="submit" class="btn-kembali">
+                            Kembalikan
+                        </button>
+                    </form>
+                    @endif
+
+                    <form method="POST" action="/admin/transaksi/{{ $t->id }}">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="btn-delete"
+                            onclick="return confirm('Yakin ingin menghapus transaksi ini?')">
+                            Hapus
+                        </button>
+                    </form>
+
+                </td>
+            </tr>
             @endforeach
         </tbody>
     </table>

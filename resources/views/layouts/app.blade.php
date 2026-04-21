@@ -4,91 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perpustakaan</title>
+
     <style>
-        body {
-            margin: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #FEFBF3;
-            color: #2D4263;
+        :root {
+            --primary: #1E293B;       /* NAVY */
+            --primary-light: #334155;
+            --background: #F1F5F9;    /* SOFT GREY */
+            --card: #FFFFFF;
+            --text: #0F172A;
+            --border: #E2E8F0;
+            --danger: #DC2626;
         }
 
-        /* SIDEBAR TETAP */
+        body {
+            margin: 0;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            background-color: var(--background);
+            color: var(--text);
+        }
+
+        /* SIDEBAR */
         .sidebar {
             width: 240px;
             height: 100vh;
             position: fixed;
-            background: #2D4263; /* Forest Green */
-            color: #FEFBF3;
-            padding: 30px 20px;
-            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+            background: var(--primary);
+            color: white;
+            padding: 25px 18px;
             box-sizing: border-box;
             z-index: 100;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
         }
 
-        /* TULISAN PERPUSTAKAAN (Header Sidebar) */
         .sidebar-header {
-            margin-bottom: 40px;
+            font-size: 1.5rem;
+            margin-bottom: 30px;
             text-align: center;
+            color: white
         }
 
         .sidebar-header h2 {
-            font-size: 1.5rem;
-            color: #FEFBF3;
+            font-size: 1.3rem;
             margin: 0;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #ECDBBA; /* Garis bawah krem */
-            letter-spacing: 1px;
-            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
 
         .sidebar-menu a {
             display: block;
-            color: #ECDBBA;
+            color: rgba(255,255,255,0.8);
             text-decoration: none;
-            margin: 10px 0;
-            padding: 12px 15px;
+            margin: 6px 0;
+            padding: 10px 14px;
             border-radius: 8px;
-            transition: 0.3s;
-            font-weight: 500;
+            transition: all 0.2s ease;
+            font-size: 0.95rem;
         }
 
         .sidebar-menu a:hover {
-            background: #ECDBBA;
-            color: #2D4263;
+            background: var(--primary-light);
+            color: #fff;
         }
 
-        .card {
-         background: #ECDBBA;
-         padding: 20px;
-         margin-bottom: 20px;
-         border-radius: 12px;
-         color: #2D4263;
-         box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-        }
-
-        /* KONTEN DINAMIS */
+        /* CONTENT */
         .content {
             margin-left: 240px;
             padding: 40px;
             min-height: 100vh;
         }
 
+        /* CARD */
+        .card {
+            background: var(--card);
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.04);
+        }
+
+        /* LOGOUT BUTTON */
         .btn-logout {
             background: transparent;
-            color: #ECDBBA;
-            border: 1px solid #ECDBBA;
+            color: rgba(255,255,255,0.8);
+            border: 1px solid rgba(255,255,255,0.25);
             width: 100%;
             padding: 10px;
             border-radius: 8px;
             cursor: pointer;
-            font-weight: bold;
-            margin-top: 50px;
-            transition: 0.3s;
+            font-weight: 500;
+            transition: all 0.2s ease;
         }
 
         .btn-logout:hover {
-            background: #C84B31; /* Terracotta */
-            border-color: #C84B31;
+            background: var(--danger);
+            border-color: var(--danger);
             color: white;
         }
     </style>
@@ -96,30 +109,40 @@
 <body>
 
 <div class="sidebar">
-    <div class="sidebar-header">
-        <h2>Perpustakaan</h2> </div>
 
-    <div class="sidebar-menu">
-        @if(auth()->user()->role == 'admin')
-            <a href="/admin/dashboard">🏠 Dashboard</a>
-            <a href="/admin/books">📚 Kelola Buku</a>
-            <a href="/admin/users">👥 Kelola Anggota</a>
-            <a href="/admin/transaksi">📑 Transaksi</a>
-        @else
-            <a href="/user/dashboard">🏠 Dashboard</a>
-            <a href="/user/books">📖 Pinjam Buku</a>
-            <a href="/user/transaksi">⏳ Riwayat Pinjam</a>
-        @endif
+    <!-- ATAS -->
+    <div>
+        <div class="sidebar-header">
+            <h2>PERPUSTAKAAN</h2>
+        </div>
 
+        <div class="sidebar-menu">
+            @if(auth()->user()->role == 'admin')
+                <a href="/admin/dashboard">Dashboard</a>
+                <a href="/admin/books">Kelola Buku</a>
+                <a href="/admin/users">Kelola Anggota</a>
+                <a href="/admin/transaksi">Transaksi</a>
+            @else
+                <a href="/user/dashboard">Dashboard</a>
+                <a href="/user/books">Pinjam Buku</a>
+                <a href="/user/transaksi">Riwayat Pinjam</a>
+            @endif
+        </div>
+    </div>
+
+    <!-- BAWAH -->
+    <div>
         <form method="POST" action="/logout">
             @csrf
             <button type="submit" class="btn-logout">Keluar</button>
         </form>
     </div>
+
 </div>
 
 <div class="content">
-    @yield('content') </div>
+    @yield('content')
+</div>
 
 </body>
 </html>

@@ -1,167 +1,266 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Perpustakaan</title>
-    <style>
-        body {
-            background-color: #FEFBF3;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-            color: #2D4263;
-            /* Tambahan aksen dekoratif di background */
-            background-image: radial-gradient(#ECDBBA 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Perpustakaan</title>
 
-        .login-container {
-            background-color: #ECDBBA;
-            padding: 50px 40px;
-            border-radius: 20px;
-            width: 380px;
-            box-shadow: 0 15px 35px rgba(45, 66, 99, 0.1);
-            position: relative;
-            overflow: hidden;
-        }
+<style>
+:root {
+    --primary: #1E293B;
+    --accent: #3B82F6;
+    --background: #F1F5F9;
+    --card: #FFFFFF;
+    --text: #0F172A;
+    --text-muted: #64748B;
+    --border: #E2E8F0;
+}
 
-        /* Hiasan sudut untuk kesan buku */
-        .login-container::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, #C84B31, #2D4263);
-        }
+/* FIX UTAMA */
+* {
+    box-sizing: border-box;
+}
 
-        .logo-area {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+/* BODY */
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    height: 100vh;
+    display: flex;
+}
 
-        .logo-area span {
-            font-size: 3rem;
-            display: block;
-            margin-bottom: 10px;
-        }
+/* LAYOUT */
+.container {
+    display: flex;
+    width: 100%;
+}
 
-        h2 {
-            text-align: center;
-            color: #2D4263;
-            margin: 0;
-            font-size: 1.6rem;
-            letter-spacing: 1px;
-        }
+/* LEFT */
+.left {
+    flex: 1;
+    background: linear-gradient(135deg, #1E293B, #0F172A);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
 
-        .subtitle {
-            text-align: center;
-            display: block;
-            font-size: 0.9rem;
-            opacity: 0.7;
-            margin-bottom: 30px;
-        }
+/* glow */
+.left::after {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(59,130,246,0.25), transparent 70%);
+    top: -50px;
+    right: -50px;
+}
 
-        .input-group {
-            margin-bottom: 15px;
-            position: relative;
-        }
+/* pattern */
+.left::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 22px 22px;
+}
 
-        input {
-            width: 100%;
-            padding: 14px 15px;
-            border: 1px solid rgba(45, 66, 99, 0.1);
-            border-radius: 10px;
-            box-sizing: border-box;
-            background-color: #FEFBF3;
-            font-size: 15px;
-            transition: 0.3s;
-        }
+/* animasi masuk kiri */
+.left-content {
+    position: relative;
+    z-index: 2;
+    animation: fadeLeft 0.8s ease;
+}
 
-        input:focus {
-            outline: none;
-            border-color: #2D4263;
-            box-shadow: 0 0 0 4px rgba(45, 66, 99, 0.05);
-        }
+.left h1 {
+    font-size: 2.2rem;
+    margin-bottom: 10px;
+}
 
-        button {
-            width: 100%;
-            padding: 14px;
-            margin-top: 10px;
-            background-color: #C84B31;
-            color: #FEFBF3;
-            border: none;
-            border-radius: 10px;
-            font-weight: bold;
-            font-size: 16px;
-            cursor: pointer;
-            transition: 0.3s;
-            box-shadow: 0 4px 10px rgba(200, 75, 49, 0.3);
-        }
+.left p {
+    opacity: 0.8;
+    max-width: 300px;
+}
 
-        button:hover {
-            background-color: #A93E28;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(200, 75, 49, 0.4);
-        }
+/* RIGHT */
+.right {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--background);
+    position: relative;
+}
 
-        .error-msg {
-            color: #C84B31;
-            font-size: 13px;
-            text-align: center;
-            background: rgba(200, 75, 49, 0.05);
-            padding: 10px;
-            border-radius: 8px;
-            margin-bottom: 15px;
-            border-left: 3px solid #C84B31;
-        }
+/* pattern kanan */
+.right::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(#cbd5f5 0.6px, transparent 0.6px);
+    background-size: 20px 20px;
+    opacity: 0.5;
+}
 
-        p {
-            text-align: center;
-            margin-top: 25px;
-            font-size: 14px;
-            color: rgba(45, 66, 99, 0.8);
-        }
+/* LOGIN BOX */
+.login-box {
+    width: 360px;
+    background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(10px);
+    padding: 30px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+    position: relative;
+    z-index: 2;
+    animation: fadeUp 0.6s ease;
+}
 
-        a {
-            color: #C84B31;
-            text-decoration: none;
-            font-weight: bold;
-        }
+/* TEXT */
+h2 {
+    margin-bottom: 5px;
+    font-size: 1.4rem;
+}
 
-        a:hover {
-            text-decoration: underline;
-        }
-    </style>
+.subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+}
+
+/* INPUT */
+input {
+    width: 100%;
+    padding: 12px 14px; /* FIX */
+    margin-bottom: 14px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    background: #F8FAFC;
+    transition: all 0.25s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--accent);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+}
+
+/* BUTTON */
+button {
+    width: 100%;
+    padding: 12px 14px; /* DISAMAKAN */
+    background: linear-gradient(135deg, #1E293B, #334155);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(30,41,59,0.2);
+}
+
+button:active {
+    transform: scale(0.98);
+}
+
+    .auth-footer {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.auth-footer a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.auth-footer a:hover {
+    text-decoration: underline;
+}
+
+/* ERROR */
+.error-msg {
+    background: #FEF2F2;
+    color: #991B1B;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 14px;
+    font-size: 0.85rem;
+    animation: fadeUp 0.4s ease;
+}
+
+/* ANIMATIONS */
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* MOBILE */
+@media(max-width: 768px) {
+    .left {
+        display: none;
+    }
+}
+</style>
 </head>
 <body>
 
-<div class="login-container">
-    <div class="logo-area">
-        <span>📖</span>
-        <h2>Selamat Datang</h2>
-        <span class="subtitle">Masuk untuk melanjutkan membaca</span>
+<div class="container">
+
+    <div class="left">
+        <div class="left-content">
+            <h1>Perpustakaan</h1>
+            <p>Tingkatkan pengetahuan Anda dengan membaca buku</p>
+        </div>
     </div>
 
-    @if($errors->any())
-        <div class="error-msg">❌ {{ $errors->first() }}</div>
-    @endif
+    <div class="right">
+        <div class="login-box">
+            <h2>Masuk</h2>
+            <div class="subtitle">Silakan login ke akun Anda</div>
 
-    <form method="POST" action="/login">
-        @csrf
-        <div class="input-group">
-            <input type="email" name="email" placeholder="Email Anda" required>
+            @if($errors->any())
+                <div class="error-msg">
+                    {{ $errors->first() }}
+                </div>
+            @endif
+
+            <form method="POST" action="/login">
+                @csrf
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit">Masuk</button>
+                <div class="auth-footer">Belum punya akun? <a href="/register">Daftar sekarang</a>
+                </div>
+            </form>
         </div>
-        <div class="input-group">
-            <input type="password" name="password" placeholder="Kata Sandi" required>
-        </div>
-        <button type="submit">Masuk</button>
-    </form>
+    </div>
 
 </div>
 
