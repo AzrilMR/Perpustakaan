@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tambah Buku - Cozy Library</title>
+    <title>Tambah Buku</title>
 <style>
     body {
         background: #F1F5F9;
@@ -61,56 +61,47 @@
         border: 1px solid;
     }
 
-    /* SUCCESS */
     .alert-success {
         background: #ECFDF5;
         color: #065F46;
         border-color: #A7F3D0;
     }
 
-    /* ERROR */
     .alert-error {
         background: #FEF2F2;
         color: #991B1B;
         border-color: #FCA5A5;
     }
 
-    /* WARNING */
-    .alert-warning {
-        background: #FFFBEB;
-        color: #92400E;
-        border-color: #FCD34D;
+    .btn-group {
+        display: flex;
+        gap: 10px;
+        margin-top: 15px;
     }
 
-    .btn-group {
-    display: flex;
-    gap: 10px;
-    margin-top: 15px;
-}
+    .btn-back {
+        flex: 1;
+        text-align: center;
+        text-decoration: none;
+        font-size: 0.9rem;
+        color: #0F172A;
+        border: 1px solid #E2E8F0;
+        padding: 10px;
+        border-radius: 8px;
+    }
 
-.btn-back {
-    flex: 1;
-    text-align: center;
-    text-decoration: none;
-    font-size: 0.9rem;
-    color: #0F172A;
-    border: 1px solid #E2E8F0;
-    padding: 10px;
-    border-radius: 8px;
-}
+    .btn-back:hover {
+        background: #F1F5F9;
+    }
 
-.btn-back:hover {
-    background: #F1F5F9;
-}
-
-.btn-save {
-    flex: 1;
-}
+    .btn-save {
+        flex: 1;
+    }
 </style>
 </head>
 <body>
 
-    <div class="container">
+<div class="container">
     @if(session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -126,7 +117,7 @@
     <div class="box">
         <h2>Tambah Koleksi</h2>
 
-        <form method="POST" action="/admin/books">
+        <form method="POST" action="/admin/books" enctype="multipart/form-data">
             @csrf
 
             <div class="form-group">
@@ -145,13 +136,19 @@
             </div>
 
             <div style="display:flex; gap:10px;">
-                <input type="number" name="tahun" placeholder="Tahun" min="0" step="1" required>
-                <input type="number" name="stok" placeholder="Stok" min="0" step="1" required>
+                <input type="number" name="tahun" placeholder="Tahun" min="0" required>
+                <input type="number" name="stok" placeholder="Stok" min="0" required>
+            </div>
+
+            <!-- TAMBAHAN COVER -->
+            <div class="form-group">
+                <label>Cover Buku</label>
+                <input type="file" name="cover" required>
             </div>
 
             <div class="btn-group">
                 <button class="btn-save">Simpan</button>
-                 <a href="/admin/books" class="btn-back">Kembali</a>
+                <a href="/admin/books" class="btn-back">Kembali</a>
             </div>
         </form>
     </div>

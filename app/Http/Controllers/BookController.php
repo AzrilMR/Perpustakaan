@@ -4,20 +4,18 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Book;
-use App\Models\Category;
 
 class BookController extends Controller
 {
     public function index()
     {
-        $books = Book::with('category')->get();
+        $books = Book::all();
         return view('admin.books.index', compact('books'));
     }
 
     public function create()
     {
-        $categories = Category::all();
-        return view('admin.books.create', compact('categories'));
+        return view('admin.books.create');
     }
 
     public function store(Request $request)
@@ -25,36 +23,69 @@ class BookController extends Controller
         $request->validate([
             'judul' => 'required',
             'penulis' => 'required',
-            'stok' => 'required|integer',
+            'penerbit' => 'required',
+            'tahun' => 'required|numeric',
+            'stok' => 'required|integer|min:0',
+            'cover' => 'required|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
-        Book::create($request->all());
+        $coverName = null;
 
-        return redirect('/admin/books')->with('success', 'Buku berhasil ditambah');
+        if ($request->hasFile('cover')) {
+            $coverName = time() . '.' . $request->cover->extension();
+            $request->cover->move(public_path('covers'), $coverName);
+        }
+
+        Book::create([
+            'judul' => $request->judul,
+            'penulis' => $request->penulis,
+            'penerbit' => $request->penerbit,
+            'tahun' => $request->tahun,
+            'stok' => $request->stok,
+            'cover' => $coverName
+        ]);
+
+        return redirect('/admin/books')->with('success', 'Buku berhasil ditambahkan');
     }
 
     public function edit($id)
     {
         $book = Book::findOrFail($id);
-        $categories = Category::all();
-
-        return view('admin.books.edit', compact('book', 'categories'));
+        return view('admin.books.edit', compact('book'));
     }
 
     public function update(Request $request, $id)
     {
         $book = Book::findOrFail($id);
 
-        $book->update($request->all());
+        $request->validate([
+            'judul' => 'required',
+            'penulis' => 'required',
+            'penerbit' => 'required',
+            'tahun' => 'required|numeric',
+            'stok' => 'required|integer|min:0',
+        ]);
+
+        if ($request->hasFile('cover')) {
+            $coverName = time() . '.' . $request->cover->extension();
+            $request->cover->move(public_path('covers'), $coverName);
+            $book->cover = $coverName;
+        }
+
+        $book->update([
+            'judul' => $request->judul,
+            'penulis' => $request->penulis,
+            'penerbit' => $request->penerbit,
+            'tahun' => $request->tahun,
+            'stok' => $request->stok,
+        ]);
 
         return redirect('/admin/books')->with('success', 'Buku berhasil diupdate');
     }
 
     public function destroy($id)
     {
-        $book = Book::findOrFail($id);
-        $book->delete();
-
-        return redirect('/admin/books')->with('success', 'Buku berhasil dihapus');
+        Book::findOrFail($id)->delete();
+        return back()->with('success', 'Buku dihapus');
     }
 }

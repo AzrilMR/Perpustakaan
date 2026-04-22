@@ -56,7 +56,7 @@ class AuthController extends Controller
             'role' => 'siswa'
         ]);
 
-        return redirect('/login')->with('success', 'Register berhasil');
+        return redirect('/login')->with('success', 'Register berhasil!, Silahkan Login.');
     }
 
     public function users()

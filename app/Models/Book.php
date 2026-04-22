@@ -12,7 +12,8 @@ class Book extends Model
         'penerbit',
         'tahun',
         'stok',
-        'category_id'
+        'category_id',
+        'cover'
     ];
 
     // Relasi ke Category

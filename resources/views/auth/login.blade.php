@@ -198,6 +198,29 @@ button:active {
     animation: fadeUp 0.4s ease;
 }
 
+.alert-success {
+    background: #ECFDF5;
+    color: #065F46;
+    border: 1px solid #A7F3D0;
+    padding: 12px 16px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-size: 0.9rem;
+    animation: fadeIn 0.5s ease;
+}
+
+/* animasi */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 /* ANIMATIONS */
 @keyframes fadeUp {
     from {
@@ -232,6 +255,7 @@ button:active {
 <body>
 
 <div class="container">
+   
 
     <div class="left">
         <div class="left-content">
@@ -242,6 +266,10 @@ button:active {
 
     <div class="right">
         <div class="login-box">
+             @if(session('success'))
+                <div class="alert-success"> {{ session('success') }}
+                </div>
+@endif
             <h2>Masuk</h2>
             <div class="subtitle">Silakan login ke akun Anda</div>
 

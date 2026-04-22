@@ -181,29 +181,36 @@
             Mengedit: {{ $book->judul }}
         </div>
 
-        <form method="POST" action="/admin/books/{{ $book->id }}">
-            @csrf
-            @method('PUT')
+<form method="POST" action="/admin/books/{{ $book->id }}" enctype="multipart/form-data">
+    @csrf
+    @method('PUT')
 
-            <label>Judul Buku</label>
-            <input type="text" name="judul" value="{{ $book->judul }}" required>
+    <label>Judul Buku</label>
+    <input type="text" name="judul" value="{{ $book->judul }}" required>
 
-            <label>Penulis</label>
-            <input type="text" name="penulis" value="{{ $book->penulis }}" required>
+    <label>Penulis</label>
+    <input type="text" name="penulis" value="{{ $book->penulis }}" required>
 
-            <label>Penerbit</label>
-            <input type="text" name="penerbit" value="{{ $book->penerbit }}" required>
+    <label>Penerbit</label>
+    <input type="text" name="penerbit" value="{{ $book->penerbit }}" required>
 
-            <div class="row">
-                <input type="number" name="tahun" value="{{ $book->tahun }}" min="0" step="1" required>
-                <input type="number" name="stok" value="{{ $book->stok }}" min="0" step="1" required>
-            </div>
+    <div class="row">
+        <input type="number" name="tahun" value="{{ $book->tahun }}" required>
+        <input type="number" name="stok" value="{{ $book->stok }}" required>
+    </div>
 
-           <div class="btn-group">
-            <button class="btn-save">Simpan</button>
-            <a href="/admin/books" class="btn-back">Kembali</a>
-           </div>
-        </form>
+    <!-- COVER -->
+    <label>Cover Saat Ini</label><br>
+    <img src="/covers/{{ $book->cover }}" width="80"><br><br>
+
+    <label>Ganti Cover</label>
+    <input type="file" name="cover">
+
+    <div class="btn-group">
+        <button class="btn-save">Simpan</button>
+        <a href="/admin/books" class="btn-back">Kembali</a>
+    </div>
+</form>
 
     </div>
 </div>

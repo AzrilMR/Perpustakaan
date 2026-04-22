@@ -9,13 +9,11 @@
 :root {
     --primary: #1E293B;
     --accent: #3B82F6;
-    --background: #F1F5F9;
-    --card: rgba(255,255,255,0.8);
     --text: #0F172A;
     --text-muted: #64748B;
-    --border: #E2E8F0;
 }
 
+/* FIX GLOBAL (INI KUNCI) */
 * {
     box-sizing: border-box;
 }
@@ -23,78 +21,103 @@
 body {
     margin: 0;
     font-family: 'Inter', sans-serif;
-    background: var(--background);
+    overflow-x: hidden; /* hilangkan geser kanan */
 }
 
 /* NAVBAR */
 .navbar {
     display: flex;
     justify-content: space-between;
+    align-items: center;
+
     padding: 20px 40px;
-    position: sticky;
-    top: 0;
-    background: rgba(255,255,255,0.7);
-    backdrop-filter: blur(10px);
-    z-index: 100;
+    position: absolute;
+
+    left: 0;
+    right: 0; /* ganti width:100% */
+
+    z-index: 10;
+    color: white;
 }
 
 .navbar a {
     margin-left: 15px;
     text-decoration: none;
-    color: var(--text);
-}
-
-.btn-primary {
-    background: var(--primary);
     color: white;
-    padding: 8px 14px;
-    border-radius: 8px;
 }
 
 /* HERO */
 .hero {
-    padding: 120px 40px;
-    text-align: center;
+    height: 100vh;
+    display: flex;
+    align-items: center;
+
+    padding: 0 60px;
     position: relative;
+    color: white;
     overflow: hidden;
 }
 
-/* glow background */
-.hero::before {
-    content: "";
+/* BACKGROUND */
+.hero-bg {
     position: absolute;
-    width: 400px;
-    height: 400px;
-    background: radial-gradient(circle, rgba(59,130,246,0.3), transparent 70%);
-    top: -100px;
-    right: -100px;
+    inset: 0;
+    z-index: 0;
 }
 
-/* subtle pattern */
+/* IMAGE */
+.hero-bg img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+    transform: scale(1.2);
+    opacity: 0;
+    transition: all 1.5s ease;
+}
+
+/* OVERLAY */
 .hero::after {
     content: "";
     position: absolute;
     inset: 0;
-    background-image: radial-gradient(#cbd5f5 0.6px, transparent 0.6px);
-    background-size: 20px 20px;
-    opacity: 0.3;
+    background: rgba(0,0,0,0.55);
+    z-index: 1;
 }
 
+/* CONTENT */
+.hero-content {
+    position: relative;
+    z-index: 2;
+    max-width: 600px;
+
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 1s ease;
+}
+
+/* ACTIVE */
+.hero.show .hero-bg img {
+    transform: scale(1);
+    opacity: 1;
+}
+
+.hero.show .hero-content {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* TEXT */
 .hero h2 {
     font-size: 3rem;
     margin-bottom: 15px;
-    position: relative;
-    z-index: 2;
 }
 
 .hero p {
-    max-width: 600px;
-    margin: auto;
-    color: var(--text-muted);
-    position: relative;
-    z-index: 2;
+    color: #ddd;
 }
 
+/* BUTTON */
 .hero .btn {
     margin-top: 25px;
     display: inline-block;
@@ -103,35 +126,12 @@ body {
     color: white;
     border-radius: 10px;
     text-decoration: none;
-    position: relative;
-    z-index: 2;
     transition: 0.2s;
 }
 
 .hero .btn:hover {
     transform: translateY(-2px);
-}
-
-/* STATS */
-.stats {
-    display: flex;
-    justify-content: center;
-    gap: 40px;
-    padding: 40px;
-}
-
-.stats div {
-    text-align: center;
-}
-
-.stats h3 {
-    margin: 0;
-    font-size: 1.6rem;
-}
-
-.stats p {
-    margin: 5px 0 0;
-    color: var(--text-muted);
+    background: #0F172A;
 }
 
 /* FEATURES */
@@ -147,17 +147,15 @@ body {
 }
 
 .feature-card {
-    background: var(--card);
-    backdrop-filter: blur(10px);
+    background: #F1F5F9;
     padding: 25px;
     border-radius: 16px;
-    border: 1px solid var(--border);
+    border: 1px solid #E2E8F0;
     transition: 0.25s;
 }
 
 .feature-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.05);
 }
 
 /* CTA */
@@ -184,11 +182,12 @@ body {
 .footer {
     text-align: center;
     padding: 20px;
-    color: var(--text-muted);
+    color: #64748B;
     font-size: 0.8rem;
 }
 </style>
 </head>
+
 <body>
 
 <!-- NAVBAR -->
@@ -201,13 +200,19 @@ body {
 </div>
 
 <!-- HERO -->
-<section class="hero">
-    <h2>Perpustakaan Digital</h2>
-    <p>Temukan, pinjam, dan kelola buku dengan sistem yang cepat dan efisien.</p>
-    <a href="/register" class="btn">Mulai Sekarang</a>
+<section class="hero" id="hero">
+
+    <div class="hero-bg">
+        <img src="/images/pexels.jpg" alt="Perpustakaan">
+    </div>
+
+    <div class="hero-content">
+        <h2>Perpustakaan Digital</h2>
+        <p>Temukan, pinjam, dan kelola buku dengan sistem yang cepat dan efisien.</p>
+        <a href="/login" class="btn">Mulai Sekarang</a>
+    </div>
+
 </section>
-
-
 
 <!-- FEATURES -->
 <section class="features">
@@ -233,7 +238,7 @@ body {
 
 <!-- CTA -->
 <section class="cta">
-    <h2>Mulai Sekarang</h2>
+    <h2>Bergabung Dengan Kami</h2>
     <p>Daftar dan rasakan kemudahan sistem perpustakaan digital.</p>
     <a href="/register">Daftar Sekarang</a>
 </section>
@@ -242,6 +247,17 @@ body {
 <div class="footer">
     © 2026 Perpustakaan Digital
 </div>
+
+<!-- ANIMATION -->
+<script>
+window.addEventListener("load", function () {
+    const hero = document.getElementById("hero");
+
+    setTimeout(() => {
+        hero.classList.add("show");
+    }, 200);
+});
+</script>
 
 </body>
 </html>

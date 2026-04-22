@@ -14,7 +14,6 @@
         --warning: #F59E0B;
     }
 
-    /* Header */
     .header-section {
         margin-bottom: 25px;
     }
@@ -25,7 +24,6 @@
         margin: 0;
     }
 
-    /* Table */
     .table-container {
         background: var(--card);
         border-radius: 12px;
@@ -59,6 +57,12 @@
         background: #F9FAFB;
     }
 
+    /* 🔥 FIX: hanya kolom denda */
+    td.denda {
+        white-space: nowrap;
+        font-weight: bold;
+    }
+
     /* Badge */
     .badge {
         padding: 4px 10px;
@@ -87,7 +91,6 @@
         border-radius: 6px;
         font-size: 0.8rem;
         cursor: pointer;
-        transition: 0.2s;
     }
 
     .btn-delete:hover {
@@ -103,7 +106,6 @@
         border-radius: 6px;
         font-size: 0.8rem;
         cursor: pointer;
-        transition: 0.2s;
     }
 
     .btn-kembali:hover {
@@ -111,7 +113,13 @@
         color: white;
     }
 
-    /* Alert */
+    /* 🔥 FIX FLEX DI DALAM TD */
+    .aksi-wrapper {
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+    }
+
     .alert {
         padding: 12px;
         border-radius: 8px;
@@ -138,11 +146,11 @@
 </div>
 
 @if(session('success'))
-    <div class="alert alert-success"> {{ session('success') }}</div>
+    <div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
 @if(session('error'))
-    <div class="alert alert-error"> {{ session('error') }}</div>
+    <div class="alert alert-error">{{ session('error') }}</div>
 @endif
 
 <div class="table-container" style="margin-top: 20px;">
@@ -163,6 +171,7 @@
             @foreach($transactions as $t)
             <tr>
                 <td style="font-weight:600;">{{ $t->user->name }}</td>
+
                 <td>{{ $t->book->judul ?? 'Buku dihapus' }}</td>
 
                 <td>
@@ -187,31 +196,35 @@
                         : '-' }}
                 </td>
 
-                <td style="font-weight:bold;">
+                
+                <td class="denda">
                     Rp {{ number_format($t->denda, 0, ',', '.') }}
                 </td>
 
-                <td style="text-align:center; display:flex; gap:5px; justify-content:center;">
-                    
-                    @if($t->status == 'dipinjam')
-                    <form method="POST" action="/admin/transaksi/kembali/{{ $t->id }}">
-                        @csrf
-                        <button type="submit" class="btn-kembali">
-                            Kembalikan
-                        </button>
-                    </form>
-                    @endif
+                <td style="text-align:center;">
+                    <div class="aksi-wrapper">
 
-                    <form method="POST" action="/admin/transaksi/{{ $t->id }}">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn-delete"
-                            onclick="return confirm('Yakin ingin menghapus transaksi ini?')">
-                            Hapus
-                        </button>
-                    </form>
+                        @if($t->status == 'dipinjam')
+                        <form method="POST" action="/admin/transaksi/kembali/{{ $t->id }}">
+                            @csrf
+                            <button type="submit" class="btn-kembali">
+                                Kembalikan
+                            </button>
+                        </form>
+                        @endif
 
+                        <form method="POST" action="/admin/transaksi/{{ $t->id }}">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-delete"
+                                onclick="return confirm('Yakin ingin menghapus transaksi ini?')">
+                                Hapus
+                            </button>
+                        </form>
+
+                    </div>
                 </td>
+
             </tr>
             @endforeach
         </tbody>

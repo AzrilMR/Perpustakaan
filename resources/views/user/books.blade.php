@@ -5,19 +5,18 @@
 <style>
 :root {
     --primary: #1E293B;
-    --accent: #3B82F6;
     --background: #F1F5F9;
     --card: #FFFFFF;
     --text: #0F172A;
     --text-muted: #64748B;
     --border: #E2E8F0;
     --danger: #DC2626;
-    --success: #16A34A;
 }
 
-/* TITLE */
-h2 {
-    margin-bottom: 15px;
+/* HEADER */
+h1 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
 }
 
 /* SEARCH */
@@ -45,9 +44,9 @@ h2 {
 
 /* ALERT */
 .alert {
-    padding: 10px;
+    padding: 12px;
+    margin-bottom: 20px;
     border-radius: 8px;
-    margin-bottom: 15px;
     font-size: 0.9rem;
 }
 
@@ -62,78 +61,84 @@ h2 {
 }
 
 /* GRID */
-.book-grid {
+.grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 20px;
-    align-items: stretch; /* penting */
 }
 
 /* CARD */
 .card {
     background: var(--card);
-    padding: 18px;
-    border-radius: 12px;
     border: 1px solid var(--border);
-    transition: 0.25s;
-
+    border-radius: 12px;
+    padding: 15px;
     display: flex;
     flex-direction: column;
 }
 
-.card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+/* COVER */
+.cover {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    background: #F8FAFC;
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 10px;
 }
 
+.cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* TITLE */
 .card h3 {
-    margin-top: 0;
-    font-size: 1.1rem;
+    font-size: 1rem;
+    margin: 5px 0;
+
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+
+    min-height: 40px;
 }
 
 /* INFO */
 .card p {
-    margin: 4px 0;
     font-size: 0.85rem;
     color: var(--text-muted);
+    margin: 2px 0;
 }
 
-/* BADGE */
-.badge {
-    display: inline-block;
-    padding: 4px 10px;
-    border-radius: 6px;
-    font-size: 0.75rem;
+/* STOK */
+.stok {
     margin-top: 8px;
-    width: fit-content;
+    display: inline-block;
+    background: #F1F5F9;
+    margin-bottom: 10px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-weight: 600;
 }
 
-.available {
-    background: #DCFCE7;
-    color: #166534;
-}
-
-.empty {
-    background: #FEF2F2;
-    color: #991B1B;
-}
-
-/* FORM (kunci tombol sejajar) */
-.card form {
+/* ACTION */
+.actions {
     margin-top: auto;
 }
 
 /* BUTTON */
 .btn {
-    margin-top: 12px;
     width: 100%;
-    padding: 10px;
+    padding: 8px;
     border-radius: 8px;
     border: none;
     cursor: pointer;
     background: var(--primary);
     color: white;
-    font-weight: 500;
+    font-size: 0.85rem;
 }
 
 .btn:hover {
@@ -141,14 +146,53 @@ h2 {
 }
 
 /* EMPTY */
-.empty-text {
-    color: var(--danger);
+.empty {
+    background: #FEF2F2;
+    color: #991B1B;
+    padding: 6px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    text-align: center;
 }
+
+/* PAGINATION (custom) */
+.custom-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 25px;
+}
+
+.custom-pagination a,
+.custom-pagination span {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: 1px solid #E2E8F0;
+    font-size: 0.8rem;
+    text-decoration: none;
+    color: #0F172A;
+}
+
+.custom-pagination a:hover {
+    background: #1E293B;
+    color: #fff;
+}
+
+.custom-pagination .active {
+    background: #1E293B;
+    color: #fff;
+    font-weight: 600;
+}
+
+.custom-pagination .disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}
+
 </style>
 
-<h2>Daftar Buku</h2>
+<h1>Daftar Buku</h1>
 
-<!-- SEARCH -->
 <form method="GET" action="/user/books" class="search-box">
     <input 
         type="text" 
@@ -159,48 +203,45 @@ h2 {
     <button type="submit">Search</button>
 </form>
 
-<!-- FEEDBACK -->
 @if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
+<div class="alert alert-success">{{ session('success') }}</div>
 @endif
 
 @if(session('error'))
-    <div class="alert alert-error">
-        {{ session('error') }}
-    </div>
+<div class="alert alert-error">{{ session('error') }}</div>
 @endif
 
-<!-- EMPTY -->
-@if($books->isEmpty())
-    <p class="empty-text">Buku tidak ditemukan</p>
-@endif
-
-<!-- LIST -->
-<div class="book-grid">
+<div class="grid">
 @foreach($books as $b)
 <div class="card">
 
-    <h3>{{ $b->judul }}</h3>
+    <div class="cover">
+        <img src="/covers/{{ $b->cover }}">
+    </div>
 
-    <p>Penulis: {{ $b->penulis }}</p>
-    <p>Penerbit: {{ $b->penerbit ?? '-' }}</p>
-    <p>Tahun: {{ $b->tahun ?? '-' }}</p>
+    <h3 title="{{ $b->judul }}">{{ $b->judul }}</h3>
 
-    @if($b->stok > 0)
-        <span class="badge available">Tersedia ({{ $b->stok }})</span>
+    <p>{{ $b->penulis }}</p>
+    <p>{{ $b->penerbit }}</p>
+    <p>Tahun: {{ $b->tahun }}</p>
 
+    <span class="stok">Stok: {{ $b->stok }}</span>
+
+    <div class="actions">
+        @if($b->stok > 0)
         <form method="POST" action="/user/pinjam/{{ $b->id }}">
             @csrf
-            <button type="submit" class="btn">Pinjam</button>
+            <button class="btn">Pinjam</button>
         </form>
-    @else
-        <span class="badge empty">Stok Habis</span>
-    @endif
+        @else
+        <div class="empty">Stok Habis</div>
+        @endif
+    </div>
 
 </div>
 @endforeach
 </div>
+
+{{ $books->links('pagination.custom') }}
 
 @endsection

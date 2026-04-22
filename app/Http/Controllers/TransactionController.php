@@ -17,8 +17,10 @@ class TransactionController extends Controller
 
         $books = Book::when($search, function ($query) use ($search) {
             $query->where('judul', 'like', "%$search%")
-                  ->orWhere('penulis', 'like', "%$search%");
-        })->get();
+                ->orWhere('penulis', 'like', "%$search%");
+        })
+        ->paginate(8) // jumlah per halaman
+        ->withQueryString(); // penting agar search tidak hilang
 
         return view('user.books', compact('books', 'search'));
     }
@@ -90,35 +92,37 @@ class TransactionController extends Controller
     }
 
     // ADMIN KEMBALIKAN
-    public function kembaliAdmin($id)
-    {
-        $t = Transaction::findOrFail($id);
 
-        if ($t->status == 'kembali')
-            return back()->with('error', 'Sudah dikembalikan');
+public function kembaliAdmin($id)
+{
+    $t = Transaction::findOrFail($id);
 
-        $today = Carbon::now();
-        $jatuhTempo = Carbon::parse($t->tanggal_jatuh_tempo);
-
-        $denda = 0;
-
-        if ($today->gt($jatuhTempo)) {
-            $hari = $today->diffInDays($jatuhTempo);
-            $denda = $hari * 1000;
-        }
-
-        $t->update([
-            'status' => 'kembali',
-            'tanggal_kembali' => $today,
-            'denda' => $denda
-        ]);
-
-        if ($t->book) {
-            $t->book->increment('stok');
-        }
-
-        return back()->with('success', 'Dikembalikan. Denda: Rp '.$denda);
+    if ($t->status == 'kembali') {
+        return back()->with('error', 'Sudah dikembalikan');
     }
+
+    $today = Carbon::today(); // 🔥 hanya tanggal
+    $jatuhTempo = Carbon::parse($t->tanggal_jatuh_tempo)->startOfDay();
+
+    $denda = 0;
+
+    if ($today->gt($jatuhTempo)) {
+        $hari = $jatuhTempo->diffInDays($today);
+        $denda = $hari * 1000;
+    }
+
+    $t->update([
+        'status' => 'kembali',
+        'tanggal_kembali' => $today,
+        'denda' => $denda
+    ]);
+
+    if ($t->book) {
+        $t->book->increment('stok');
+    }
+
+    return back()->with('success', 'Dikembalikan. Denda: Rp ' . number_format($denda, 0, ',', '.'));
+}
 
     // ADMIN HAPUS
     public function delete($id)

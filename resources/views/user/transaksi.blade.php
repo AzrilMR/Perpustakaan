@@ -164,8 +164,7 @@
 
         <p>Denda: Rp {{ number_format($t->denda, 0, ',', '.') }}</p>
 
-        <p>Perpanjangan: {{ $t->perpanjangan }}x</p>
-
+        
         {{-- STATUS --}}
         @if($isLate)
             <span class="badge status-terlambat">Terlambat</span>
@@ -175,15 +174,8 @@
             <span class="badge status-kembali">Selesai</span>
         @endif
 
-        {{-- BUTTON --}}
-        @if($t->status == 'dipinjam' && $t->perpanjangan < 1)
-            <form method="POST" action="/user/perpanjang/{{ $t->id }}">
-                @csrf
-                <button class="btn-perpanjang">
-                    Perpanjang 7 Hari
-                </button>
-            </form>
-        @endif
+    
+        
 
     </div>
 </div>
